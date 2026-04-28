@@ -15,7 +15,6 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
     private let stateStore: SharedPlayerStateStoring
     private let widgetReloader: WidgetReloading
     private let metadataService: NTSLiveMetadataFetching
-    private var externalStateObserver: NSObjectProtocol?
     private var pendingStation: Station?
 
     init(
@@ -29,7 +28,11 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
         self.stateStore = stateStore
         self.widgetReloader = widgetReloader
         self.metadataService = metadataService
-        self.state = initialState ?? stateStore.load()
+        self.state = RadioPlayerService.launchState(
+            initialState: initialState,
+            stateStore: stateStore,
+            engine: engine
+        )
 
         self.engine.onStateChange = { [weak self] engineState in
             guard let self else {
@@ -40,6 +43,30 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
                 self.handleEngineState(engineState)
             }
         }
+    }
+
+    private static func launchState(
+        initialState: SharedPlayerState?,
+        stateStore: SharedPlayerStateStoring,
+        engine: RadioPlaybackEngine
+    ) -> SharedPlayerState {
+        if let initialState {
+            return initialState
+        }
+
+        let persistedState = stateStore.load()
+        guard persistedState.isPlaying else {
+            return persistedState
+        }
+
+        engine.pause()
+        var pausedState = persistedState
+        pausedState.isPlaying = false
+        pausedState.statusText = "Paused"
+        pausedState.lastError = nil
+        pausedState.updatedAt = .now
+        stateStore.save(pausedState)
+        return pausedState
     }
 
     func play(station: Station) async throws -> SharedPlayerState {
@@ -88,28 +115,6 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
 
     func currentState() -> SharedPlayerState {
         state
-    }
-
-    func startExternalStateSync() {
-        if externalStateObserver == nil {
-            externalStateObserver = PlaybackStateSignal.addObserver { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                Task { @MainActor in
-                    await self.syncFromSharedState(force: false)
-                }
-            }
-        }
-
-        Task { @MainActor in
-            await syncFromSharedState(force: true)
-        }
-    }
-
-    deinit {
-        PlaybackStateSignal.removeObserver(externalStateObserver)
     }
 
     private func handleEngineState(_ engineState: RadioEngineState) {
@@ -171,8 +176,7 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
     /// Apply a new state: dedupe equivalent consecutive states, persist, and
     /// fire exactly one widget reload per meaningful transition. Chronod
     /// budgets widget reloads - firing many in quick succession causes later
-    /// provider runs to be delayed. One reload per transition + a single
-    /// safety reload is plenty.
+    /// provider runs to be delayed.
     private func apply(_ newState: SharedPlayerState) {
         if isEquivalent(state, newState) {
             logger.log("apply skipped (state unchanged) isPlaying=\(newState.isPlaying, privacy: .public) status=\(newState.statusText, privacy: .public)")
@@ -182,11 +186,6 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
         state = newState
         stateStore.save(newState)
         widgetReloader.reloadTimelines()
-
-        // Schedule one safety reload ~800ms later for this transition. Don't
-        // cancel a previously-scheduled safety reload - letting both fire is
-        // fine because each safety reload is a single chronod request.
-        scheduleSafetyReload(delayMS: 800)
     }
 
     /// Ignore `updatedAt` so a pure timestamp churn doesn't trigger redundant
@@ -199,42 +198,6 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
             && lhs.nts1NowTitle == rhs.nts1NowTitle
             && lhs.nts2NowTitle == rhs.nts2NowTitle
             && lhs.metadataUpdatedAt == rhs.metadataUpdatedAt
-    }
-
-    private func scheduleSafetyReload(delayMS: UInt64) {
-        Task { [weak self] in
-            try? await Task.sleep(nanoseconds: delayMS * 1_000_000)
-            guard let self else {
-                return
-            }
-
-            await MainActor.run {
-                self.logger.log("safety reload fired")
-                self.widgetReloader.reloadTimelines()
-            }
-        }
-    }
-
-    private func syncFromSharedState(force: Bool) async {
-        let desired = stateStore.load()
-
-        if !force, isEquivalent(desired, state) {
-            return
-        }
-
-        if desired.isPlaying {
-            let station = desired.currentStation ?? .nts1
-            _ = try? await play(station: station)
-            return
-        }
-
-        engine.pause()
-        var updated = desired
-        updated.isPlaying = false
-        updated.statusText = "Paused"
-        updated.lastError = nil
-        updated.updatedAt = .now
-        apply(updated)
     }
 
     private func applyWithMetadata(
