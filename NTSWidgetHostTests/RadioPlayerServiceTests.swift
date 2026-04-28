@@ -89,6 +89,34 @@ final class RadioPlayerServiceTests: XCTestCase {
     }
 
     @MainActor
+    func testLaunchDoesNotAutoplayPersistedPlayingState() async throws {
+        let persistedPlayingState = SharedPlayerState(
+            currentStation: .nts1,
+            isPlaying: true,
+            statusText: "Playing NTS 1",
+            lastError: nil,
+            updatedAt: .now
+        )
+        let engine = MockRadioPlaybackEngine()
+        let store = InMemorySharedPlayerStateStore(initialState: persistedPlayingState)
+        let reloader = MockWidgetReloader()
+        let sut = RadioPlayerService(
+            engine: engine,
+            stateStore: store,
+            widgetReloader: reloader
+        )
+
+        XCTAssertEqual(engine.playCallCount, 0)
+        XCTAssertEqual(engine.pauseCallCount, 1)
+        XCTAssertFalse(sut.currentState().isPlaying)
+        XCTAssertEqual(sut.currentState().currentStation, .nts1)
+        XCTAssertEqual(sut.currentState().statusText, "Paused")
+        XCTAssertFalse(store.load().isPlaying)
+        XCTAssertEqual(store.load().currentStation, .nts1)
+        XCTAssertEqual(store.load().statusText, "Paused")
+    }
+
+    @MainActor
     func testFailureTransitionsToErrorIdleState() async throws {
         let engine = MockRadioPlaybackEngine()
         engine.loadError = DummyPlaybackError.streamUnavailable

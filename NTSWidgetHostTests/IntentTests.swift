@@ -8,6 +8,26 @@ final class IntentTests: XCTestCase {
     }
 
     @MainActor
+    func testHostRequiredControllerDoesNotMutateStateOutsideHost() async throws {
+        let initialState = SharedPlayerState(
+            currentStation: .nts1,
+            isPlaying: false,
+            statusText: "Paused",
+            lastError: nil,
+            updatedAt: .now
+        )
+        let store = InMemorySharedPlayerStateStore(initialState: initialState)
+        let sut = HostRequiredPlaybackController(stateStore: store)
+
+        _ = try await sut.play(station: .nts2)
+        _ = try await sut.togglePlayback()
+
+        XCTAssertEqual(store.savedStates.count, 0)
+        XCTAssertFalse(sut.currentState().isPlaying)
+        XCTAssertEqual(sut.currentState().currentStation, .nts1)
+    }
+
+    @MainActor
     func testPlayStationIntentSelectsRequestedStation() async throws {
         let mock = MockPlaybackController()
         PlaybackControllerLocator.controller = mock

@@ -1,5 +1,39 @@
 # NTS Widget v1 Workflow
 
+## Widget Stability Hardening (2026-04-28)
+
+### Problem observed
+
+- Adding or opening the widget could freeze/crash the macOS widget sidebar/Notification Center badly enough to require a system restart.
+- The widget extension was doing work that is unsafe in WidgetKit rendering paths: network metadata fetches, keychain writes, fallback AVPlayer playback, and repeated timeline reload amplification.
+
+### Current safety decisions
+
+### 1) Keep widget add previews static and timeline reloads read-only
+
+- Decision: `NTSWidgetProvider.getSnapshot` returns idle immediately for the widget gallery/add preview. `getTimeline` reads shared state only, then returns a timeline immediately. It does not fetch metadata, write shared state, start playback, or perform any network work.
+- Why: WidgetKit snapshot rendering must be fast for drag/add. Timeline reloads still need a read-only state mirror so the placed widget reflects playback.
+
+### 2) Forbid extension-owned playback fallback
+
+- Decision: The default `PlaybackControllerLocator` controller is `HostRequiredPlaybackController`, which logs and returns state without creating `AVPlayer` or mutating state. The host app still replaces it with `RadioPlayerService.shared` at launch.
+- Why: If App Intents ever execute in the extension instead of the host, the extension must fail inertly instead of trying to stream audio in a short-lived WidgetKit process.
+
+### 2b) Remove extension network entitlement
+
+- Decision: The widget extension does not request `com.apple.security.network.client`.
+- Why: The extension should not open streams or fetch metadata; only the host app owns network playback/metadata.
+
+### 3) Remove old external host sync
+
+- Decision: `NTSWidgetHostApp` no longer calls `startExternalStateSync`, and the dead distributed-notification sync path was removed.
+- Why: The sync path was from a superseded architecture, could race host-routed intents, and could pause or replay stale persisted state after a user action.
+
+### 4) Normalize stale playback state on host launch
+
+- Decision: If persisted state says `isPlaying = true` when the host starts, `RadioPlayerService` pauses the engine and persists a paused copy.
+- Why: Rebuilding or cold-launching the helper must never auto-start music from a stale keychain snapshot.
+
 ## Stream Playback Regression Fix (2026-04-20)
 
 ### Problem observed
@@ -18,11 +52,13 @@
 
 - Decision: Set `openAppWhenRun = false` for both widget intents.
 - Why: This preserves widget-only controls and prevents user-visible host app launches while still executing playback.
+- Status: Superseded by 2026-04-28 host-routed intents; extension-side playback was unsafe for WidgetKit stability.
 
 ### 3) Remove app-group defaults touchpoints in extension hot path
 
 - Decision: In app-group-container mode, `SharedPlayerStateStore` no longer initializes suite `UserDefaults` and relies on file-backed JSON + legacy plist migration.
 - Why: Avoid repeated `CFPrefs` sandbox read warnings in extension timeline/intent runtime and keep state transport deterministic.
+- Status: Superseded by shared keychain persistence.
 
 ## Runtime Mismatch Triage (2026-04-19)
 
@@ -69,6 +105,7 @@
 
 - Decision: Set `PlaybackControllerLocator` default to a concrete AVPlayer-backed controller available in both app and widget extension code paths.
 - Why: Widget taps execute in extension runtime and must not depend on host-app-only initialization to control playback.
+- Status: Superseded by 2026-04-28 `HostRequiredPlaybackController`, which deliberately does not create `AVPlayer` outside the host process.
 
 ### 7) Remove `AudioPlaybackIntent` conformance from widget controls
 
@@ -79,6 +116,7 @@
 
 - Decision: Add `com.apple.security.network.client` to extension entitlements.
 - Why: Stream playback can be initiated by extension-owned intent handling and must be allowed to open network streams.
+- Status: Superseded for playback; the extension should not initiate streams.
 
 ### 9) Restore explicit App Group entitlement on both targets
 
@@ -89,6 +127,7 @@
 
 - Decision: Persist `SharedPlayerState` to a JSON file under `App Group container/Library/Application Support/sharedPlayerState.json` and use `UserDefaults` only as fallback.
 - Why: Widget runtime logs showed cfprefsd sandbox read failures for the group defaults domain in extension context; direct file I/O in the resolved app-group container is reliable across timeline + intent processes.
+- Status: Superseded by shared keychain persistence.
 
 ### 11) Add legacy-state migration path
 
@@ -105,7 +144,7 @@
 
 - Decision: Set widget intents `openAppWhenRun = true` while keeping host app headless (`.accessory` + no content window scene).
 - Why: Ensures the playback engine process starts reliably on tap but does not surface an app window.
-- Status: Superseded by 2026-04-20 `openAppWhenRun = false` to preserve widget-only controls and avoid host-process dependency.
+- Status: Active again as of 2026-04-28, with extension-side playback fallback removed for stability.
 
 ## Handoff Visual Integration (2026-04-18)
 
@@ -197,6 +236,10 @@
 
 - Command Line Tools are present; full Xcode selection is still required for local build/run of app + widget targets.
 
+## Host Visibility (macOS)
+
+- The host app is built as an agent (`LSUIElement = YES`) and sets its activation policy to `.accessory`, so it should not appear in the Dock or app switcher while remaining eligible to handle WidgetKit App Intents. Expect the `NTSWidgetHost` process to exist in Activity Monitor because macOS requires a containing app for WidgetKit.
+
 ## Design Prompt Decisions
 
 ### 1) Interpret "cloud design" cautiously
@@ -252,5 +295,5 @@
 - Removed `NSExtensionPrincipalClass` override from widget `Info.plist` to keep WidgetKit extension loading on the template-default path.
 - Local-dev registration fix: removed `com.apple.security.application-groups` from host/extension entitlements because current provisioning profile does not advertise app groups, which can block extension registration in widget gallery.
 - Added back `com.apple.security.app-sandbox` to the widget extension entitlement set (without app group) to preserve valid macOS extension sandboxing while keeping local registration compatible with current profile.
-- Set widget intents `openAppWhenRun = false` to avoid forcing foreground app openings on widget control taps.
+- Set widget intents `openAppWhenRun = false` to avoid forcing foreground app openings on widget control taps. Superseded by 2026-04-28 host-routed intents plus hidden `LSUIElement`/`.accessory` host behavior.
 - Renamed widget gallery label to `NTS Live (Host)` to reduce confusion with similarly named existing NTS widgets.
