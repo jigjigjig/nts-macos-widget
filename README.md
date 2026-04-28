@@ -1,4 +1,6 @@
 # NTS macOS Widget
+<img width="365" height="184" alt="Screenshot 2026-04-28 at 09 38 19" src="https://github.com/user-attachments/assets/e6057e4b-520e-4412-ae25-b2782040d978" />
+
 
 A simple macOS desktop widget for listening to NTS Radio.
 
