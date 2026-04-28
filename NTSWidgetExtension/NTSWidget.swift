@@ -9,73 +9,31 @@ struct NTSWidgetEntry: TimelineEntry {
 
 struct NTSWidgetProvider: TimelineProvider {
     private let stateStore = AppGroupSharedPlayerStateStore()
-    private let metadataService: NTSLiveMetadataFetching = NTSLiveMetadataService()
     private let logger = Logger(subsystem: "com.fede.NTSWidgetHost", category: "NTSWidgetProvider")
 
     func placeholder(in context: Context) -> NTSWidgetEntry {
         logger.log("placeholder called")
-        return NTSWidgetEntry(date: .now, state: .idle())
+        return makeIdleEntry()
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NTSWidgetEntry) -> Void) {
-        let loaded = stateStore.load()
-        logger.log("getSnapshot isPlaying=\(loaded.isPlaying, privacy: .public) status=\(loaded.statusText, privacy: .public) station=\(loaded.currentStation?.rawValue ?? "nil", privacy: .public)")
-        completion(NTSWidgetEntry(date: .now, state: loaded))
+        logger.log("getSnapshot called")
+        completion(makeIdleEntry())
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NTSWidgetEntry>) -> Void) {
-        Task {
-            var loaded = stateStore.load()
-            logger.log("getTimeline isPlaying=\(loaded.isPlaying, privacy: .public) status=\(loaded.statusText, privacy: .public) station=\(loaded.currentStation?.rawValue ?? "nil", privacy: .public) updatedAt=\(loaded.updatedAt.timeIntervalSince1970, privacy: .public)")
+        logger.log("getTimeline called")
+        let loaded = stateStore.load()
+        logger.log("getTimeline loaded isPlaying=\(loaded.isPlaying, privacy: .public) status=\(loaded.statusText, privacy: .public) station=\(loaded.currentStation?.rawValue ?? "nil", privacy: .public)")
 
-            loaded = await mergeMetadata(into: loaded)
-
-            let now = Date.now
-            var entries: [NTSWidgetEntry] = [NTSWidgetEntry(date: now, state: loaded)]
-
-            // Key trick: provide PRE-SCHEDULED future entries so WidgetKit can
-            // render transitions locally WITHOUT calling back into the provider.
-            // This avoids dependence on chronod, which can delay provider runs by
-            // many seconds under budget pressure.
-            if loaded.isPlaying, loaded.statusText.hasPrefix("Connecting"),
-               let station = loaded.currentStation {
-                var optimisticPlaying = loaded
-                optimisticPlaying.currentStation = station
-                optimisticPlaying.isPlaying = true
-                optimisticPlaying.statusText = "Playing \(station.displayName)"
-                optimisticPlaying.lastError = nil
-                optimisticPlaying.updatedAt = now.addingTimeInterval(3)
-
-                entries.append(
-                    NTSWidgetEntry(
-                        date: now.addingTimeInterval(3),
-                        state: optimisticPlaying
-                    )
-                )
-            }
-
-            // Next full refresh well in the future — we rely on explicit
-            // reloadTimelines for state changes. A long window conserves the
-            // per-widget reload budget.
-            let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: now)
-                ?? now.addingTimeInterval(30 * 60)
-
-            completion(Timeline(entries: entries, policy: .after(nextRefresh)))
-        }
+        let now = Date.now
+        let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: now)
+            ?? now.addingTimeInterval(30 * 60)
+        completion(Timeline(entries: [NTSWidgetEntry(date: now, state: loaded)], policy: .after(nextRefresh)))
     }
 
-    private func mergeMetadata(into state: SharedPlayerState) async -> SharedPlayerState {
-        do {
-            let nowPlaying = try await metadataService.fetchNowPlaying()
-            let updated = state.merged(with: nowPlaying)
-            if updated != state {
-                stateStore.save(updated)
-            }
-            return updated
-        } catch {
-            logger.debug("metadata fetch skipped error=\(error.localizedDescription, privacy: .public)")
-            return state
-        }
+    private func makeIdleEntry(date: Date = .now) -> NTSWidgetEntry {
+        NTSWidgetEntry(date: date, state: .idle(updatedAt: date))
     }
 }
 
@@ -435,8 +393,6 @@ private struct PlayPauseButton: View {
 
 private struct WaveformIcon: View {
     var color: Color
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var phase: Double = 0
     private let heights: [CGFloat] = [0.4, 0.9, 1.0, 0.9, 0.4]
 
     var body: some View {
@@ -445,30 +401,9 @@ private struct WaveformIcon: View {
                 Capsule()
                     .fill(color)
                     .frame(width: 1.6, height: 10)
-                    .scaleEffect(y: animatedHeight(index), anchor: .center)
-                    .animation(
-                        reduceMotion
-                        ? .default
-                        : .easeInOut(duration: 0.9)
-                            .repeatForever(autoreverses: true)
-                            .delay(Double(index) * 0.08),
-                        value: phase
-                    )
+                    .scaleEffect(y: heights[index], anchor: .center)
             }
         }
-        .onAppear {
-            if !reduceMotion {
-                phase = 1
-            }
-        }
-    }
-
-    private func animatedHeight(_ index: Int) -> CGFloat {
-        if reduceMotion {
-            return heights[index]
-        }
-
-        return phase == 1 ? (index.isMultiple(of: 2) ? 1.0 : 0.5) : heights[index] * 0.4
     }
 }
 
