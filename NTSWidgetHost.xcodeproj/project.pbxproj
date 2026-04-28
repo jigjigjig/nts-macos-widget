@@ -1,0 +1,628 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1B2C3D4E5F6000000000B01 /* NTSWidgetHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000070 /* NTSWidgetHostApp.swift */; };
+		A1B2C3D4E5F6000000000B02 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000071 /* ContentView.swift */; };
+		A1B2C3D4E5F6000000000B03 /* RadioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000072 /* RadioPlayerService.swift */; };
+		A1B2C3D4E5F6000000000B04 /* AVPlayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000073 /* AVPlayerEngine.swift */; };
+		A1B2C3D4E5F6000000000B05 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000090 /* AppConstants.swift */; };
+		A1B2C3D4E5F6000000000B06 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000091 /* Station.swift */; };
+		A1B2C3D4E5F6000000000B07 /* SharedPlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000092 /* SharedPlayerState.swift */; };
+		A1B2C3D4E5F6000000000B08 /* SharedPlayerStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000093 /* SharedPlayerStateStore.swift */; };
+		A1B2C3D4E5F6000000000B09 /* WidgetReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000094 /* WidgetReloader.swift */; };
+		A1B2C3D4E5F6000000000B0A /* PlaybackControlling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000095 /* PlaybackControlling.swift */; };
+		A1B2C3D4E5F6000000000B0B /* PlaybackControllerLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000096 /* PlaybackControllerLocator.swift */; };
+		A1B2C3D4E5F6000000000B0C /* Station+AppEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000097 /* Station+AppEnum.swift */; };
+		A1B2C3D4E5F6000000000B0D /* PlayStationIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000098 /* PlayStationIntent.swift */; };
+		A1B2C3D4E5F6000000000B0E /* TogglePlaybackIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */; };
+		A1B2C3D4E5F6000000000B21 /* NTSWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000080 /* NTSWidgetBundle.swift */; };
+		A1B2C3D4E5F6000000000B22 /* NTSWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000081 /* NTSWidget.swift */; };
+		A1B2C3D4E5F6000000000B23 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000090 /* AppConstants.swift */; };
+		A1B2C3D4E5F6000000000B24 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000091 /* Station.swift */; };
+		A1B2C3D4E5F6000000000B25 /* SharedPlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000092 /* SharedPlayerState.swift */; };
+		A1B2C3D4E5F6000000000B26 /* SharedPlayerStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000093 /* SharedPlayerStateStore.swift */; };
+		A1B2C3D4E5F6000000000B27 /* WidgetReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000094 /* WidgetReloader.swift */; };
+		A1B2C3D4E5F6000000000B28 /* PlaybackControlling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000095 /* PlaybackControlling.swift */; };
+		A1B2C3D4E5F6000000000B29 /* PlaybackControllerLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000096 /* PlaybackControllerLocator.swift */; };
+		A1B2C3D4E5F6000000000B2A /* Station+AppEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000097 /* Station+AppEnum.swift */; };
+		A1B2C3D4E5F6000000000B2B /* PlayStationIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000098 /* PlayStationIntent.swift */; };
+		A1B2C3D4E5F6000000000B2C /* TogglePlaybackIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */; };
+		A1B2C3D4E5F6000000000B61 /* NTSLiveMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */; };
+		A1B2C3D4E5F6000000000B62 /* NTSLiveMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */; };
+		A1B2C3D4E5F6000000000B41 /* StationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A0 /* StationTests.swift */; };
+		A1B2C3D4E5F6000000000B42 /* RadioPlayerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */; };
+		A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A2 /* IntentTests.swift */; };
+		A1B2C3D4E5F6000000000B44 /* TestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */; };
+		A1B2C3D4E5F6000000000B60 /* NTSWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000051 /* NTSWidgetExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A1B2C3D4E5F6000000000042 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1B2C3D4E5F6000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1B2C3D4E5F6000000000011;
+			remoteInfo = NTSWidgetExtension;
+		};
+		A1B2C3D4E5F6000000000043 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1B2C3D4E5F6000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1B2C3D4E5F6000000000010;
+			remoteInfo = NTSWidgetHost;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A1B2C3D4E5F6000000000033 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A1B2C3D4E5F6000000000B60 /* NTSWidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A1B2C3D4E5F6000000000050 /* NTSWidgetHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTSWidgetHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6000000000051 /* NTSWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NTSWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6000000000052 /* NTSWidgetHostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NTSWidgetHostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6000000000070 /* NTSWidgetHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSWidgetHostApp.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000071 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000072 /* RadioPlayerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioPlayerService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000073 /* AVPlayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerEngine.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000074 /* NTSWidgetHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NTSWidgetHost.entitlements; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000080 /* NTSWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSWidgetBundle.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000081 /* NTSWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSWidget.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000082 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000083 /* NTSWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NTSWidgetExtension.entitlements; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000090 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000091 /* Station.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000092 /* SharedPlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerState.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000093 /* SharedPlayerStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerStateStore.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000094 /* WidgetReloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetReloader.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000095 /* PlaybackControlling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControlling.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000096 /* PlaybackControllerLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControllerLocator.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000097 /* Station+AppEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Station+AppEnum.swift"; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000098 /* PlayStationIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayStationIntent.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePlaybackIntent.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSLiveMetadataService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A0 /* StationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioPlayerServiceTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A2 /* IntentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDoubles.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1B2C3D4E5F6000000000031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1B2C3D4E5F6000000000035 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1B2C3D4E5F6000000000038 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1B2C3D4E5F6000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000000000060 /* NTSWidgetHost */,
+				A1B2C3D4E5F6000000000061 /* NTSWidgetExtension */,
+				A1B2C3D4E5F6000000000062 /* Shared */,
+				A1B2C3D4E5F6000000000063 /* NTSWidgetHostTests */,
+				A1B2C3D4E5F6000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000000000050 /* NTSWidgetHost.app */,
+				A1B2C3D4E5F6000000000051 /* NTSWidgetExtension.appex */,
+				A1B2C3D4E5F6000000000052 /* NTSWidgetHostTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000000000060 /* NTSWidgetHost */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000000000070 /* NTSWidgetHostApp.swift */,
+				A1B2C3D4E5F6000000000071 /* ContentView.swift */,
+				A1B2C3D4E5F6000000000072 /* RadioPlayerService.swift */,
+				A1B2C3D4E5F6000000000073 /* AVPlayerEngine.swift */,
+				A1B2C3D4E5F6000000000074 /* NTSWidgetHost.entitlements */,
+			);
+			path = NTSWidgetHost;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000000000061 /* NTSWidgetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000000000080 /* NTSWidgetBundle.swift */,
+				A1B2C3D4E5F6000000000081 /* NTSWidget.swift */,
+				A1B2C3D4E5F6000000000082 /* Info.plist */,
+				A1B2C3D4E5F6000000000083 /* NTSWidgetExtension.entitlements */,
+			);
+			path = NTSWidgetExtension;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000000000062 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000000000090 /* AppConstants.swift */,
+				A1B2C3D4E5F6000000000091 /* Station.swift */,
+				A1B2C3D4E5F6000000000092 /* SharedPlayerState.swift */,
+				A1B2C3D4E5F6000000000093 /* SharedPlayerStateStore.swift */,
+				A1B2C3D4E5F6000000000094 /* WidgetReloader.swift */,
+				A1B2C3D4E5F6000000000095 /* PlaybackControlling.swift */,
+				A1B2C3D4E5F6000000000096 /* PlaybackControllerLocator.swift */,
+				A1B2C3D4E5F6000000000097 /* Station+AppEnum.swift */,
+				A1B2C3D4E5F6000000000098 /* PlayStationIntent.swift */,
+				A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */,
+				A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000000000063 /* NTSWidgetHostTests */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F60000000000A0 /* StationTests.swift */,
+				A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */,
+				A1B2C3D4E5F60000000000A2 /* IntentTests.swift */,
+				A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */,
+			);
+			path = NTSWidgetHostTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1B2C3D4E5F6000000000010 /* NTSWidgetHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1B2C3D4E5F6000000000020 /* Build configuration list for PBXNativeTarget "NTSWidgetHost" */;
+			buildPhases = (
+				A1B2C3D4E5F6000000000030 /* Sources */,
+				A1B2C3D4E5F6000000000031 /* Frameworks */,
+				A1B2C3D4E5F6000000000032 /* Resources */,
+				A1B2C3D4E5F6000000000033 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1B2C3D4E5F6000000000040 /* PBXTargetDependency */,
+			);
+			name = NTSWidgetHost;
+			productName = NTSWidgetHost;
+			productReference = A1B2C3D4E5F6000000000050 /* NTSWidgetHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A1B2C3D4E5F6000000000011 /* NTSWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1B2C3D4E5F6000000000023 /* Build configuration list for PBXNativeTarget "NTSWidgetExtension" */;
+			buildPhases = (
+				A1B2C3D4E5F6000000000034 /* Sources */,
+				A1B2C3D4E5F6000000000035 /* Frameworks */,
+				A1B2C3D4E5F6000000000036 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NTSWidgetExtension;
+			productName = NTSWidgetExtension;
+			productReference = A1B2C3D4E5F6000000000051 /* NTSWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A1B2C3D4E5F6000000000012 /* NTSWidgetHostTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1B2C3D4E5F6000000000026 /* Build configuration list for PBXNativeTarget "NTSWidgetHostTests" */;
+			buildPhases = (
+				A1B2C3D4E5F6000000000037 /* Sources */,
+				A1B2C3D4E5F6000000000038 /* Frameworks */,
+				A1B2C3D4E5F6000000000039 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1B2C3D4E5F6000000000041 /* PBXTargetDependency */,
+			);
+			name = NTSWidgetHostTests;
+			productName = NTSWidgetHostTests;
+			productReference = A1B2C3D4E5F6000000000052 /* NTSWidgetHostTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1B2C3D4E5F6000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			TargetAttributes = {
+				A1B2C3D4E5F6000000000010 = {
+					CreatedOnToolsVersion = 16.0;
+					SystemCapabilities = {
+						com.apple.ApplicationGroups.Mac = {
+							enabled = 1;
+						};
+					};
+				};
+				A1B2C3D4E5F6000000000011 = {
+					CreatedOnToolsVersion = 16.0;
+					SystemCapabilities = {
+						com.apple.ApplicationGroups.Mac = {
+							enabled = 1;
+						};
+					};
+				};
+				A1B2C3D4E5F6000000000012 = {
+					CreatedOnToolsVersion = 16.0;
+					TestTargetID = A1B2C3D4E5F6000000000010;
+				};
+			};
+			};
+			buildConfigurationList = A1B2C3D4E5F6000000000004 /* Build configuration list for PBXProject "NTSWidgetHost" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1B2C3D4E5F6000000000002;
+			productRefGroup = A1B2C3D4E5F6000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1B2C3D4E5F6000000000010 /* NTSWidgetHost */,
+				A1B2C3D4E5F6000000000011 /* NTSWidgetExtension */,
+				A1B2C3D4E5F6000000000012 /* NTSWidgetHostTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1B2C3D4E5F6000000000032 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1B2C3D4E5F6000000000036 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1B2C3D4E5F6000000000039 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1B2C3D4E5F6000000000030 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D4E5F6000000000B01 /* NTSWidgetHostApp.swift in Sources */,
+				A1B2C3D4E5F6000000000B02 /* ContentView.swift in Sources */,
+				A1B2C3D4E5F6000000000B03 /* RadioPlayerService.swift in Sources */,
+				A1B2C3D4E5F6000000000B04 /* AVPlayerEngine.swift in Sources */,
+				A1B2C3D4E5F6000000000B05 /* AppConstants.swift in Sources */,
+				A1B2C3D4E5F6000000000B06 /* Station.swift in Sources */,
+				A1B2C3D4E5F6000000000B07 /* SharedPlayerState.swift in Sources */,
+				A1B2C3D4E5F6000000000B08 /* SharedPlayerStateStore.swift in Sources */,
+				A1B2C3D4E5F6000000000B09 /* WidgetReloader.swift in Sources */,
+				A1B2C3D4E5F6000000000B0A /* PlaybackControlling.swift in Sources */,
+				A1B2C3D4E5F6000000000B0B /* PlaybackControllerLocator.swift in Sources */,
+				A1B2C3D4E5F6000000000B0C /* Station+AppEnum.swift in Sources */,
+				A1B2C3D4E5F6000000000B0D /* PlayStationIntent.swift in Sources */,
+				A1B2C3D4E5F6000000000B0E /* TogglePlaybackIntent.swift in Sources */,
+				A1B2C3D4E5F6000000000B61 /* NTSLiveMetadataService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1B2C3D4E5F6000000000034 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D4E5F6000000000B21 /* NTSWidgetBundle.swift in Sources */,
+				A1B2C3D4E5F6000000000B22 /* NTSWidget.swift in Sources */,
+				A1B2C3D4E5F6000000000B23 /* AppConstants.swift in Sources */,
+				A1B2C3D4E5F6000000000B24 /* Station.swift in Sources */,
+				A1B2C3D4E5F6000000000B25 /* SharedPlayerState.swift in Sources */,
+				A1B2C3D4E5F6000000000B26 /* SharedPlayerStateStore.swift in Sources */,
+				A1B2C3D4E5F6000000000B27 /* WidgetReloader.swift in Sources */,
+				A1B2C3D4E5F6000000000B28 /* PlaybackControlling.swift in Sources */,
+				A1B2C3D4E5F6000000000B29 /* PlaybackControllerLocator.swift in Sources */,
+				A1B2C3D4E5F6000000000B2A /* Station+AppEnum.swift in Sources */,
+				A1B2C3D4E5F6000000000B2B /* PlayStationIntent.swift in Sources */,
+				A1B2C3D4E5F6000000000B2C /* TogglePlaybackIntent.swift in Sources */,
+				A1B2C3D4E5F6000000000B62 /* NTSLiveMetadataService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1B2C3D4E5F6000000000037 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D4E5F6000000000B41 /* StationTests.swift in Sources */,
+				A1B2C3D4E5F6000000000B42 /* RadioPlayerServiceTests.swift in Sources */,
+				A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */,
+				A1B2C3D4E5F6000000000B44 /* TestDoubles.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A1B2C3D4E5F6000000000040 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1B2C3D4E5F6000000000011 /* NTSWidgetExtension */;
+			targetProxy = A1B2C3D4E5F6000000000042 /* PBXContainerItemProxy */;
+		};
+		A1B2C3D4E5F6000000000041 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1B2C3D4E5F6000000000010 /* NTSWidgetHost */;
+			targetProxy = A1B2C3D4E5F6000000000043 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A1B2C3D4E5F6000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1B2C3D4E5F6000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A1B2C3D4E5F6000000000021 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NTSWidgetHost/NTSWidgetHost.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CUD2M2N848;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = NTSWidgetHost;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_LSUIElement = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../PlugIns",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1B2C3D4E5F6000000000022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NTSWidgetHost/NTSWidgetHost.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CUD2M2N848;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = NTSWidgetHost;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_LSUIElement = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../PlugIns",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A1B2C3D4E5F6000000000024 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = NTSWidgetExtension/NTSWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CUD2M2N848;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NTSWidgetExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost.NTSWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1B2C3D4E5F6000000000025 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = NTSWidgetExtension/NTSWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CUD2M2N848;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NTSWidgetExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost.NTSWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A1B2C3D4E5F6000000000027 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHostTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NTSWidgetHost.app/Contents/MacOS/NTSWidgetHost";
+			};
+			name = Debug;
+		};
+		A1B2C3D4E5F6000000000028 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHostTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NTSWidgetHost.app/Contents/MacOS/NTSWidgetHost";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1B2C3D4E5F6000000000004 /* Build configuration list for PBXProject "NTSWidgetHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1B2C3D4E5F6000000000005 /* Debug */,
+				A1B2C3D4E5F6000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1B2C3D4E5F6000000000020 /* Build configuration list for PBXNativeTarget "NTSWidgetHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1B2C3D4E5F6000000000021 /* Debug */,
+				A1B2C3D4E5F6000000000022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1B2C3D4E5F6000000000023 /* Build configuration list for PBXNativeTarget "NTSWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1B2C3D4E5F6000000000024 /* Debug */,
+				A1B2C3D4E5F6000000000025 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1B2C3D4E5F6000000000026 /* Build configuration list for PBXNativeTarget "NTSWidgetHostTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1B2C3D4E5F6000000000027 /* Debug */,
+				A1B2C3D4E5F6000000000028 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1B2C3D4E5F6000000000001 /* Project object */;
+}
