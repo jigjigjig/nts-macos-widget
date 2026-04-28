@@ -19,13 +19,14 @@ struct NTSWidgetHostApp: App {
 
         let service = RadioPlayerService.shared
         PlaybackControllerLocator.controller = service
-        service.startExternalStateSync()
         #if canImport(MediaPlayer)
         mediaControls = HostMediaControls(service: service)
         #else
         mediaControls = nil
         #endif
         #if canImport(AppKit)
+        // LSUIElement hides the app from the Dock/Cmd-Tab; .accessory keeps it
+        // eligible to handle WidgetKit App Intents without presenting UI.
         NSApplication.shared.setActivationPolicy(.accessory)
         #endif
 

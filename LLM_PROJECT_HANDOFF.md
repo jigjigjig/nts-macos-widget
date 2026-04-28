@@ -11,10 +11,10 @@ Build a native macOS widget for live NTS radio with:
 
 ## 2) Current state summary
 - Visual design is customized to match the external handoff aesthetic.
-- Widget interaction uses App Intents and currently executes playback directly.
-- Host app is headless (`.accessory`) and does not present a normal window.
-- Shared state is persisted in app-group container JSON file.
-- App-group `UserDefaults` is intentionally bypassed in app-group mode to avoid CFPrefs sandbox issues in extension runtime.
+- Widget interaction uses App Intents routed to the host app (`openAppWhenRun = true`) for durable playback.
+- Host app is headless (`LSUIElement = YES`, `.accessory`) and does not present a normal window.
+- Shared state is persisted in the shared keychain access group.
+- Widget gallery snapshots are intentionally static; timeline reloads read shared state only. Provider code must not fetch network data, write state, create AVPlayer, or run host sync work.
 
 ## 3) Architecture
 ### 3.1 Targets
@@ -32,19 +32,20 @@ Build a native macOS widget for live NTS radio with:
 - `PlaybackControllerLocator`: runtime-selected playback controller.
 
 ### 3.3 Playback implementations
-- `WidgetPlaybackController` (in `Shared/PlaybackControllerLocator.swift`)
-- Owns an `AVPlayer`.
-- Executes play/pause for intent actions.
-- Persists state and reloads timelines.
-- Observes `AVPlayerItemFailedToPlayToEndTime` and transitions to unavailable state.
 - `RadioPlayerService` (in `NTSWidgetHost/RadioPlayerService.swift`)
-- App-process playback service implementing same protocol.
-- Also persists state + reloads widget.
-- Contains external state sync logic (`startExternalStateSync`) from prior architecture iteration.
+- App-process playback service implementing `PlaybackControlling`.
+- Owns the durable `AVPlayerEngine`, persists state, fetches metadata after playback starts, and reloads the widget once per meaningful state change.
+- Normalizes stale persisted `isPlaying = true` state to paused on host launch so rebuild/cold launch cannot auto-start audio.
+- `HostRequiredPlaybackController` (in `Shared/PlaybackControllerLocator.swift`)
+- Default inert controller for non-host contexts.
+- Does not create `AVPlayer`, write shared state, or reload timelines.
+- Exists so accidental extension-side intent execution fails safely instead of trying to stream inside WidgetKit.
 
 ### 3.4 Widget UI
 - Single medium widget (`NTSWidget`).
-- Provider reads shared state from `AppGroupSharedPlayerStateStore`.
+- Snapshot provider returns idle immediately for gallery/add stability.
+- Timeline provider reads shared state only so the placed widget reflects playback.
+- Provider must stay side-effect-free: no network calls, no state writes, no audio work.
 - Visual state adapter maps shared state to `idle`, `playing`, `paused`, `unavailable`.
 - Layout uses weighted control row (`1 : 1 : 1.25`) and custom gradients/styling.
 - Widget config includes:
@@ -54,24 +55,25 @@ Build a native macOS widget for live NTS radio with:
 ## 4) Runtime flow (current)
 ### 4.1 Station button (1/2)
 1. Widget button triggers `PlayStationIntent`.
-2. Intent executes `PlaybackControllerLocator.controller.play(station:)`.
-3. In extension context, controller defaults to `WidgetPlaybackController.shared`.
-4. Player loads stream URL and starts playback.
-5. Shared state is written to app-group JSON.
-6. Widget timelines are reloaded.
+2. `openAppWhenRun = true` launches the hidden host if needed.
+3. Host app installs `RadioPlayerService.shared` into `PlaybackControllerLocator`.
+4. Intent executes `RadioPlayerService.play(station:)`.
+5. Host-owned `AVPlayerEngine` loads the stream URL and starts playback.
+6. Shared state is written to the shared keychain item and the widget timeline is reloaded.
 
 ### 4.2 Play/Pause button
 1. Widget button triggers `TogglePlaybackIntent`.
-2. Intent executes `PlaybackControllerLocator.controller.togglePlayback()`.
-3. Controller pauses or resumes based on current shared state.
-4. Shared state is persisted and widget timelines are reloaded.
+2. `openAppWhenRun = true` launches the hidden host if needed.
+3. Intent executes `RadioPlayerService.togglePlayback()`.
+4. Host-owned playback pauses or resumes based on current state.
+5. Shared state is persisted and widget timelines are reloaded.
 
 ### 4.3 Host app bootstrap path
 - In host app init:
 - `PlaybackControllerLocator.controller = RadioPlayerService.shared`
-- `startExternalStateSync()` is called
 - app activation policy set to `.accessory`
-- Because intents use `openAppWhenRun = false`, host process is not required to be launched for widget taps.
+- The host does not run external state sync on launch.
+- Because intents use `openAppWhenRun = true`, widget taps can start a durable hidden playback process without exposing a Dock/Cmd-Tab app.
 
 ## 5) Major implementation timeline
 ### 2026-04-18
@@ -115,15 +117,15 @@ Build a native macOS widget for live NTS radio with:
 - Extension bundle id: `com.fede.NTSWidgetHost.NTSWidgetExtension`
 - Both app and extension entitlements include:
 - `com.apple.security.app-sandbox = true`
-- `com.apple.security.network.client = true`
 - `com.apple.security.application-groups = group.com.fede.NTSWidgetHost`
+- Only the host app has `com.apple.security.network.client = true`.
 
 ## 8) Known operational pitfalls
 - Desktop widget can run stale code from `/Applications/NTSWidgetHost.app` instead of latest DerivedData output.
 - Rebuilding in Xcode is not always enough to update installed widget behavior.
 - Notification Center / widget extension process caching can hide new behavior until processes are restarted.
+- Do not add network requests, shared-state writes, AVPlayer ownership, or infinite animations to `NTSWidgetProvider` or widget rendering paths. Those can stall the widget gallery/sidebar.
 - Extension-side group `UserDefaults` access can produce CFPrefs sandbox warnings; current store design avoids that hot path.
-- There is leftover host-sync infrastructure (`PlaybackStateSignal`, `startExternalStateSync`) from superseded architecture iteration.
 
 ## 9) Build/deploy/debug commands used
 - Build extension + host:
@@ -140,16 +142,14 @@ Build a native macOS widget for live NTS radio with:
 ## 10) Testing status
 - Unit test files exist for station mapping, intents, and service transitions.
 - `NTSWidgetHost` scheme currently has no concrete test configuration in CLI test action.
-- Building test target via CLI has shown module compatibility issues (`built without -enable-testing`) depending on invocation.
+- Building test target via CLI requires `ENABLE_TESTABILITY=YES` when invoked directly.
 - Practical verification has been mostly manual via widget install + runtime logging.
 
 ## 11) Recommended next steps for next LLM
-1. Decide and simplify final playback ownership model.
-2. Remove dead path code if host-sync model is not being used (`PlaybackStateSignal`, related observer flow).
-3. If host-owned playback is desired, redesign launch/liveness strategy so taps reliably spin up a durable player process without user-visible app UI.
-4. Add one deterministic integration test harness for intent -> playback -> persisted state transitions.
-5. Fix scheme test action so `xcodebuild test` works predictably from CLI.
-6. Add explicit runtime self-diagnostics (structured logs around intent execution, stream load/play success/failure, and state persistence path).
+1. Fix scheme test action so `xcodebuild test` works predictably from CLI.
+2. Add one deterministic integration test harness for widget intent -> host playback -> persisted state transitions.
+3. Add explicit runtime self-diagnostics (structured logs around intent execution, stream load/play success/failure, and state persistence path).
+4. Keep WidgetKit provider/render paths side-effect-free.
 
 ## 12) Source-of-truth docs
 - `NTS_WIDGET_WORKFLOW.md` contains historical decision log, including superseded decisions.
