@@ -6,6 +6,25 @@ A simple macOS desktop widget for listening to NTS Radio.
 
 This project gives you quick access to **NTS 1**, **NTS 2**, and **play/pause** directly from your Mac desktop, without needing to keep a full app window open.
 
+## Download (no Xcode needed)
+
+Grab the latest build from **[Releases](https://github.com/jigjigjig/nts-macos-widget/releases)**.
+
+1. Download `NTS-macOS-Widget-*.zip` and unzip it
+2. Drag **NTS Radio** into your **Applications** folder
+3. Open it once (see Gatekeeper note below)
+4. Right-click the desktop → **Edit Widgets** → search for **NTS** → add it
+5. Leave **NTS Radio** running in the background while you use the widget (it has no Dock icon)
+
+### Gatekeeper note
+
+This app is not notarized by Apple, so the first open may be blocked.
+
+- Prefer: right-click **NTS Radio** → **Open** → **Open**
+- Or: **System Settings → Privacy & Security** → **Open Anyway**
+
+Requires **macOS 14** or later.
+
 ## What It Does
 
 - Lets you start NTS 1 or NTS 2 from a macOS widget
@@ -44,3 +63,15 @@ It currently includes:
 - A desktop widget
 - Playback controls for NTS 1 and NTS 2
 - Shared playback state between the app and widget
+
+### Package a GitHub Release
+
+With Xcode installed:
+
+```bash
+./scripts/package-release.sh 1.0.1
+# creates dist/NTS-macOS-Widget-1.0.1.zip
+
+./scripts/package-release.sh 1.0.1 --publish
+# builds the zip and creates/uploads a GitHub release (needs `gh` auth)
+```

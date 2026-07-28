@@ -6,6 +6,9 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 
+# Release packaging
+dist/
+
 # Swift Package Manager
 .build/
 
