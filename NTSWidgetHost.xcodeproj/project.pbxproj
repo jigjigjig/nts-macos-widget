@@ -39,6 +39,7 @@
 		A1B2C3D4E5F6000000000B42 /* RadioPlayerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */; };
 		A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A2 /* IntentTests.swift */; };
 		A1B2C3D4E5F6000000000B44 /* TestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */; };
+		A1B2C3D4E5F6000000000B45 /* SharedPlayerStateFileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A4 /* SharedPlayerStateFileStoreTests.swift */; };
 		A1B2C3D4E5F6000000000B60 /* NTSWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000051 /* NTSWidgetExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1B2C3D4E5F6000000000B70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000B0 /* Assets.xcassets */; };
 		A1B2C3D4E5F6000000000B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000B0 /* Assets.xcassets */; };
@@ -103,6 +104,7 @@
 		A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioPlayerServiceTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A2 /* IntentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDoubles.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A4 /* SharedPlayerStateFileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerStateFileStoreTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000B0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -201,6 +203,7 @@
 				A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */,
 				A1B2C3D4E5F60000000000A2 /* IntentTests.swift */,
 				A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */,
+				A1B2C3D4E5F60000000000A4 /* SharedPlayerStateFileStoreTests.swift */,
 			);
 			path = NTSWidgetHostTests;
 			sourceTree = "<group>";
@@ -391,6 +394,7 @@
 				A1B2C3D4E5F6000000000B42 /* RadioPlayerServiceTests.swift in Sources */,
 				A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */,
 				A1B2C3D4E5F6000000000B44 /* TestDoubles.swift in Sources */,
+				A1B2C3D4E5F6000000000B45 /* SharedPlayerStateFileStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,6 +420,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				SDKROOT = macosx;
@@ -443,10 +448,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = all;
 				CODE_SIGN_ENTITLEMENTS = NTSWidgetHost/NTSWidgetHost.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = CUD2M2N848;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "NTS Radio";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
@@ -457,7 +464,7 @@
 					"@executable_path/../PlugIns",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -472,10 +479,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = all;
 				CODE_SIGN_ENTITLEMENTS = NTSWidgetHost/NTSWidgetHost.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = CUD2M2N848;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "NTS Radio";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
@@ -486,7 +495,7 @@
 					"@executable_path/../PlugIns",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -501,9 +510,11 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NTSWidgetExtension/NTSWidgetExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = CUD2M2N848;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NTSWidgetExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -512,7 +523,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost.NTSWidgetExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -529,9 +540,11 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NTSWidgetExtension/NTSWidgetExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = CUD2M2N848;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NTSWidgetExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -540,7 +553,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHost.NTSWidgetExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -555,7 +568,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -564,7 +578,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHostTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -577,7 +591,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -586,7 +601,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fede.NTSWidgetHostTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

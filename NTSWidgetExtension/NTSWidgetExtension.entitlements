@@ -2,15 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>group.com.fede.NTSWidgetHost</string>
-    </array>
-    <key>com.apple.security.app-sandbox</key>
-    <true/>
-    <key>keychain-access-groups</key>
-    <array>
-        <string>$(AppIdentifierPrefix)com.fede.NTSWidgetHost.sharedstate</string>
-    </array>
+	<!-- App Sandbox is REQUIRED and must stay. macOS refuses to register an
+	     unsandboxed app extension: `pluginkit -m -i <ext id>` reports no match,
+	     WidgetKit never loads the widget, and the desktop shows an empty black
+	     rectangle. Verified on macOS 26.6.2 — removing this key deregistered
+	     the extension, and restoring it registered it again.
+
+	     Unlike application-groups / keychain-access-groups, plain app-sandbox
+	     needs no provisioning profile, so it does not reintroduce the 7-day
+	     expiry that broke the 1.0.1 release.
+
+	     Deliberately nothing else: the extension never opens a stream, fetches
+	     metadata, or writes shared state. It only reads the state file the host
+	     writes into this extension's own container. See
+	     SharedPlayerStateFileStore for why the container is the shared location. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
 </dict>
 </plist>

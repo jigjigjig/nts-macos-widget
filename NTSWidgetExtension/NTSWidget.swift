@@ -8,7 +8,7 @@ struct NTSWidgetEntry: TimelineEntry {
 }
 
 struct NTSWidgetProvider: TimelineProvider {
-    private let stateStore = AppGroupSharedPlayerStateStore()
+    private let stateStore = SharedPlayerStateFileStore()
     private let logger = Logger(subsystem: "com.fede.NTSWidgetHost", category: "NTSWidgetProvider")
 
     func placeholder(in context: Context) -> NTSWidgetEntry {

@@ -16,6 +16,15 @@ Grab the latest build from **[Releases](https://github.com/jigjigjig/nts-macos-w
 4. Right-click the desktop → **Edit Widgets** → search for **NTS** → add it
 5. Leave **NTS Radio** running in the background while you use the widget (it has no Dock icon)
 
+### If you installed 1.0.1, please update
+
+Version 1.0.1 stopped working about a week after release: the widget turned into a blank black rectangle
+and the app refused to launch. The build embedded a code-signing provisioning profile that expired 7 days
+after it was built, and macOS then refused to start the app at all. It was not a macOS update that broke it.
+
+1.0.2 removes that dependency entirely, so it does not expire. Replace the app in **Applications** with the
+new build and the widget will render again.
+
 ### Gatekeeper note
 
 This app is not notarized by Apple, so the first open may be blocked.
@@ -69,9 +78,9 @@ It currently includes:
 With Xcode installed:
 
 ```bash
-./scripts/package-release.sh 1.0.1
-# creates dist/NTS-macOS-Widget-1.0.1.zip
+./scripts/package-release.sh 1.0.2
+# creates dist/NTS-macOS-Widget-1.0.2.zip
 
-./scripts/package-release.sh 1.0.1 --publish
+./scripts/package-release.sh 1.0.2 --publish
 # builds the zip and creates/uploads a GitHub release (needs `gh` auth)
 ```

@@ -19,7 +19,7 @@ final class RadioPlayerService: ObservableObject, PlaybackControlling {
 
     init(
         engine: RadioPlaybackEngine = AVPlayerEngine(),
-        stateStore: SharedPlayerStateStoring = AppGroupSharedPlayerStateStore(),
+        stateStore: SharedPlayerStateStoring = SharedPlayerStateFileStore(),
         widgetReloader: WidgetReloading = WidgetReloader(),
         metadataService: NTSLiveMetadataFetching = NTSLiveMetadataService(),
         initialState: SharedPlayerState? = nil

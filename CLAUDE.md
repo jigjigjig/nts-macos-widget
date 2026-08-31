@@ -27,19 +27,27 @@ xcodebuild -project NTSWidgetHost.xcodeproj -scheme NTSWidgetHost \
 ./scripts/package-release.sh 1.0.1 --publish   # + gh release create/upload
 ```
 
-**Test caveat:** the shared `NTSWidgetHost.xcscheme` has an empty `<TestAction>` with no `TestableReference`, so `xcodebuild test` currently builds and runs nothing. To run tests you must add the testable to the scheme (in Xcode: Product → Scheme → Edit Scheme → Test → add `NTSWidgetHostTests`) or invoke the test target directly with `-only-testing:NTSWidgetHostTests/<Class>/<method>` after wiring it up. Test target uses `TEST_HOST`/`BUNDLE_LOADER` against the host app, so it must be built with the host.
+Run a single test with `-only-testing:NTSWidgetHostTests/<Class>/<method>`. The test target builds against the host app via `TEST_HOST`/`BUNDLE_LOADER`, and `@testable import` needs `ENABLE_TESTABILITY`, which the project-level Debug config sets.
 
 ### Verifying the installed widget
 
 Xcode rebuilds are *not* enough — the desktop widget can keep running stale code and a stale copy from `/Applications`:
 
 ```bash
-ditto build/DerivedData/Build/Products/Debug/NTSWidgetHost.app /Applications/NTSWidgetHost.app
-killall NTSWidgetExtension NTSWidgetHost NotificationCenter
-log show --last 20m --predicate 'subsystem == "com.fede.NTSWidgetHost"' --style compact
+rm -rf "/Applications/NTS Radio.app"
+ditto dist/stage/"NTS Radio.app" "/Applications/NTS Radio.app"
+# Replacing the bundle DEREGISTERS the extension — pluginkit will report no
+# match and the widget stays blank until LaunchServices re-registers it.
+/System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R "/Applications/NTS Radio.app"
+pluginkit -m -i com.fede.NTSWidgetHost.NTSWidgetExtension -vvv   # must print the extension
+killall NTSWidgetExtension NTSWidgetHost NotificationCenter chronod
+open -a "/Applications/NTS Radio.app"   # must succeed; a spawn failure means an entitlement problem
 ```
 
-All runtime logging uses subsystem `com.fede.NTSWidgetHost` with per-type categories; that log predicate is the primary debugging tool for this project.
+Two diagnostics worth knowing, both learned the hard way:
+
+- `open -a` failing with `Launchd job spawn failed` / POSIX 163 means AMFI rejected the code signature — almost always a profile-dependent entitlement (see signing invariants), not a UI bug. A blank black widget is the user-visible symptom.
+- **`log show` does not reliably persist this app's `Logger` output on macOS 26** — it can return zero lines for a process that is demonstrably running, so absence of logs proves nothing. Use `log stream` while reproducing, or check `pgrep -fl "NTS Radio.app"` to confirm the host and extension are actually alive.
 
 `MANUAL_TEST_PLAN.md` is the manual acceptance checklist (widget add, station switch, pause/resume, offline failure path).
 
@@ -58,11 +66,33 @@ Three targets share one source tree: `Shared/` compiles into both the host app a
 
 `NTSWidgetProvider` must stay side-effect-free: `getSnapshot` returns a static idle entry immediately (gallery/drag-add stability), `getTimeline` only reads shared state. Adding network fetches, state writes, AVPlayer, or infinite animations to provider/render paths has previously frozen the widget sidebar / Notification Center hard enough to require a system restart.
 
-### Shared state transport is the Keychain, not App Groups
+### Signing invariants — read before touching entitlements
 
-`AppGroupSharedPlayerStateStore` (name is historical) stores the JSON-encoded `SharedPlayerState` in a **data-protection keychain generic-password item** under access group `$(AppIdentifierPrefix)com.fede.NTSWidgetHost.sharedstate`.
+This project is signed by a **free** Apple team, whose provisioning profiles last **7 days**. Any *profile-dependent* entitlement therefore becomes a time bomb: once the profile expires, AMFI refuses to spawn the process, `open` fails with `Launchd job spawn failed` (POSIX 163), and the widget renders as an **empty black rectangle**. This is exactly how 1.0.1 broke — built 2026-07-28, profile expired 2026-08-04, dead for every downloader a week later.
 
-Reason: the signing profile does not authorize the App Group capability, so app-group container files and `UserDefaults(suiteName:)` silently diverge between the two sandboxes (each process sees its own private view). `keychain-access-groups` with the team prefix does work. `kSecUseDataProtectionKeychain = true` is required — the legacy keychain would trigger per-app ACL consent prompts from the extension. Don't "fix" this back to an app-group file without first registering the App Group capability with Apple.
+The rules that follow, all verified on macOS 26.6.2:
+
+- **Never ship `com.apple.application-identifier`, `com.apple.developer.team-identifier`, `keychain-access-groups`, or `com.apple.security.application-groups`**, and never embed a `embedded.provisionprofile`. `package-release.sh` fails the build if any of them survive.
+- **The widget extension must keep `com.apple.security.app-sandbox`.** macOS refuses to register an unsandboxed app extension — `pluginkit -m -i com.fede.NTSWidgetHost.NTSWidgetExtension` reports no match and the widget never loads. Plain `app-sandbox` needs no profile, so it is expiry-safe.
+- **The host app is deliberately unsandboxed** (empty entitlements). That is what lets it reach into the extension's container, and it needs no entitlement for network or AVPlayer.
+- Signing is `CODE_SIGN_STYLE = Manual` with `CODE_SIGN_IDENTITY = "-"` (ad-hoc) and an empty `DEVELOPMENT_TEAM`, so Xcode never fetches a profile.
+
+Only revisit this if the project moves to a *paid* team with a registered capability — and then verify the build still launches more than 7 days after signing.
+
+### Shared state transport is a file in the extension's container
+
+`SharedPlayerStateFileStore` keeps the JSON-encoded `SharedPlayerState` at:
+
+```
+~/Library/Containers/com.fede.NTSWidgetHost.NTSWidgetExtension/Data/
+    Library/Application Support/NTSWidgetHost/sharedPlayerState.json
+```
+
+The two processes are asymmetric, and that asymmetry picks the path: the extension is sandboxed so it can only reach its own container, while the unsandboxed host can reach anywhere. The extension's container is therefore the only directory both can agree on. **The host writes; the extension only reads** — which is also required by the side-effect-free provider rule below.
+
+The home directory is resolved from the **passwd database**, not `NSHomeDirectory()` or `FileManager.urls(for:in:)`. Those are redirected into the container inside a sandboxed process, so using them would make the extension compute a doubled container path and silently read a different file than the host wrote.
+
+Every sandbox-scoped alternative (app groups, team-prefixed keychain access groups, `UserDefaults(suiteName:)`) needs a profile-dependent entitlement, so none of them are available here.
 
 ### Playback state machine
 
@@ -84,7 +114,8 @@ The widget's visual layer derives a `WidgetStatus` (`idle`, `playing`, `paused`,
 
 - App bundle id `com.fede.NTSWidgetHost`; extension `com.fede.NTSWidgetHost.NTSWidgetExtension`
 - Widget kind `NTSWidget` (`AppConstants.widgetKind`); the extension scheme sets `_XCWidgetKind=NTSWidget`
-- Team `CUD2M2N848`; the keychain access-group string in `SharedPlayerStateStore.swift` hardcodes this prefix
+- The extension bundle id also names the sandbox container the shared state file lives in, so `AppConstants.widgetExtensionBundleIdentifier` must match the extension target's `PRODUCT_BUNDLE_IDENTIFIER`
+- No team id is set anywhere; builds are ad-hoc signed on purpose (see signing invariants)
 - Distribution app is renamed **NTS Radio** at package time; bundle id is unchanged
 
 ## Docs

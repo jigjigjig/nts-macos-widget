@@ -2,17 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.security.application-groups</key>
-	<array>
-		<string>group.com.fede.NTSWidgetHost</string>
-	</array>
-	<key>com.apple.security.app-sandbox</key>
-	<true/>
-	<key>com.apple.security.network.client</key>
-	<true/>
-	<key>keychain-access-groups</key>
-	<array>
-		<string>$(AppIdentifierPrefix)com.fede.NTSWidgetHost.sharedstate</string>
-	</array>
+	<!-- Intentionally empty.
+
+	     This project is signed by a free Apple team, whose provisioning
+	     profiles last 7 days. Any restricted entitlement (App Sandbox,
+	     application-groups, keychain-access-groups, application-identifier)
+	     must be authorized by a profile, so a distributed build carrying one
+	     stops launching when that profile expires — AMFI refuses to spawn it
+	     and the widget renders as an empty black rectangle. That is what broke
+	     the 1.0.1 release seven days after it was built.
+
+	     Shipping with no restricted entitlements and no embedded profile keeps
+	     the app launchable indefinitely.
+
+	     The host is also deliberately UNSANDBOXED, which is what lets it write
+	     the shared state file into the widget extension's own container — the
+	     only directory the sandboxed extension can also read. See
+	     SharedPlayerStateFileStore. Network access needs no entitlement outside
+	     the sandbox.
+
+	     Note the asymmetry: the *extension* must keep com.apple.security
+	     .app-sandbox or macOS will not register it at all. Only the host drops
+	     the sandbox.
+
+	     Do not add keys here without checking that the build still launches
+	     more than 7 days after signing. -->
 </dict>
 </plist>
