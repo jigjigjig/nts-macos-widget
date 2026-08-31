@@ -37,11 +37,15 @@
 		A1B2C3D4E5F6000000000B62 /* NTSLiveMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */; };
 		A1B2C3D4E5F6000000000B63 /* WidgetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009B /* WidgetAction.swift */; };
 		A1B2C3D4E5F6000000000B64 /* WidgetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009B /* WidgetAction.swift */; };
+		A1B2C3D4E5F6000000000B65 /* FirstLineCenterAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009C /* FirstLineCenterAlignment.swift */; };
+		A1B2C3D4E5F6000000000B66 /* FirstLineCenterAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009C /* FirstLineCenterAlignment.swift */; };
 		A1B2C3D4E5F6000000000B41 /* StationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A0 /* StationTests.swift */; };
 		A1B2C3D4E5F6000000000B42 /* RadioPlayerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */; };
 		A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A2 /* IntentTests.swift */; };
 		A1B2C3D4E5F6000000000B44 /* TestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */; };
 		A1B2C3D4E5F6000000000B45 /* SharedPlayerStateFileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A4 /* SharedPlayerStateFileStoreTests.swift */; };
+		A1B2C3D4E5F6000000000B46 /* HTMLEntityDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A5 /* HTMLEntityDecodingTests.swift */; };
+		A1B2C3D4E5F6000000000B47 /* FirstLineCenterAlignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A6 /* FirstLineCenterAlignmentTests.swift */; };
 		A1B2C3D4E5F6000000000B60 /* NTSWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000051 /* NTSWidgetExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1B2C3D4E5F6000000000B70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000B0 /* Assets.xcassets */; };
 		A1B2C3D4E5F6000000000B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000B0 /* Assets.xcassets */; };
@@ -103,11 +107,14 @@
 		A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePlaybackIntent.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSLiveMetadataService.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000009B /* WidgetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAction.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000009C /* FirstLineCenterAlignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLineCenterAlignment.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A0 /* StationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioPlayerServiceTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A2 /* IntentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDoubles.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A4 /* SharedPlayerStateFileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedPlayerStateFileStoreTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A5 /* HTMLEntityDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLEntityDecodingTests.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60000000000A6 /* FirstLineCenterAlignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLineCenterAlignmentTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000B0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -196,6 +203,7 @@
 				A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */,
 				A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */,
 				A1B2C3D4E5F600000000009B /* WidgetAction.swift */,
+				A1B2C3D4E5F600000000009C /* FirstLineCenterAlignment.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -208,6 +216,8 @@
 				A1B2C3D4E5F60000000000A2 /* IntentTests.swift */,
 				A1B2C3D4E5F60000000000A3 /* TestDoubles.swift */,
 				A1B2C3D4E5F60000000000A4 /* SharedPlayerStateFileStoreTests.swift */,
+				A1B2C3D4E5F60000000000A5 /* HTMLEntityDecodingTests.swift */,
+				A1B2C3D4E5F60000000000A6 /* FirstLineCenterAlignmentTests.swift */,
 			);
 			path = NTSWidgetHostTests;
 			sourceTree = "<group>";
@@ -368,6 +378,7 @@
 				A1B2C3D4E5F6000000000B0E /* TogglePlaybackIntent.swift in Sources */,
 				A1B2C3D4E5F6000000000B61 /* NTSLiveMetadataService.swift in Sources */,
 				A1B2C3D4E5F6000000000B63 /* WidgetAction.swift in Sources */,
+				A1B2C3D4E5F6000000000B65 /* FirstLineCenterAlignment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +400,7 @@
 				A1B2C3D4E5F6000000000B2C /* TogglePlaybackIntent.swift in Sources */,
 				A1B2C3D4E5F6000000000B62 /* NTSLiveMetadataService.swift in Sources */,
 				A1B2C3D4E5F6000000000B64 /* WidgetAction.swift in Sources */,
+				A1B2C3D4E5F6000000000B66 /* FirstLineCenterAlignment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +413,8 @@
 				A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */,
 				A1B2C3D4E5F6000000000B44 /* TestDoubles.swift in Sources */,
 				A1B2C3D4E5F6000000000B45 /* SharedPlayerStateFileStoreTests.swift in Sources */,
+				A1B2C3D4E5F6000000000B46 /* HTMLEntityDecodingTests.swift in Sources */,
+				A1B2C3D4E5F6000000000B47 /* FirstLineCenterAlignmentTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

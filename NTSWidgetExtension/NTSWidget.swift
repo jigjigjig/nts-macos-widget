@@ -1,6 +1,9 @@
 import SwiftUI
 import WidgetKit
 import os
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct NTSWidgetEntry: TimelineEntry {
     let date: Date
@@ -183,16 +186,24 @@ private struct Badge: View {
 private struct StatusLine: View {
     let status: WidgetStatus
 
+    private static let fontSize: CGFloat = 22
+    private static let capCenterOffset = VerticalAlignment.capCenterOffset(
+        forFontSize: fontSize,
+        weight: .semibold
+    )
+
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 10) {
+        HStack(alignment: .firstLineCenter, spacing: 10) {
             symbol
+                .alignmentGuide(.firstLineCenter) { $0[VerticalAlignment.center] }
 
             Text(status.lineText)
-                .font(.system(size: 22, weight: .semibold, design: .default))
+                .font(.system(size: Self.fontSize, weight: .semibold, design: .default))
                 .tracking(-0.5)
                 .foregroundStyle(status.visualState == .paused || status.visualState == .idle ? .secondary : .primary)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
+                .alignmentGuide(.firstLineCenter) { $0[.firstTextBaseline] - Self.capCenterOffset }
 
             Spacer(minLength: 0)
         }
