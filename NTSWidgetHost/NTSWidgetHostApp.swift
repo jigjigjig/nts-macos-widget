@@ -11,6 +11,14 @@ import MediaPlayer
 @MainActor
 @main
 struct NTSWidgetHostApp: App {
+    #if canImport(AppKit)
+    // Receives the ntsradio:// URLs the widget's controls open. An
+    // NSApplicationDelegate is used rather than SwiftUI's `onOpenURL` because
+    // this app's only scene is `Settings`, which is not instantiated while the
+    // app runs headless, so a scene-attached handler would never fire.
+    @NSApplicationDelegateAdaptor(WidgetActionURLHandler.self) private var urlHandler
+    #endif
+
     private let mediaControls: HostMediaControls?
 
     init() {
@@ -39,6 +47,51 @@ struct NTSWidgetHostApp: App {
         }
     }
 }
+
+#if canImport(AppKit)
+/// Turns the widget's `ntsradio://` links into playback on the host-owned
+/// player. See `WidgetAction` for why the widget uses links and not App Intents.
+@MainActor
+final class WidgetActionURLHandler: NSObject, NSApplicationDelegate {
+    private let logger = Logger(subsystem: "com.fede.NTSWidgetHost", category: "WidgetActionURLHandler")
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            guard let action = WidgetAction(url: url) else {
+                logger.error("ignoring unrecognized url=\(url.absoluteString, privacy: .public)")
+                continue
+            }
+
+            perform(action)
+        }
+    }
+
+    private func perform(_ action: WidgetAction) {
+        let service = RadioPlayerService.shared
+
+        switch action {
+        case .play(let station):
+            logger.log("widget link play station=\(station.rawValue, privacy: .public)")
+            Task { @MainActor in
+                do {
+                    _ = try await service.play(station: station)
+                } catch {
+                    logger.error("play failed error=\(error.localizedDescription, privacy: .public)")
+                }
+            }
+        case .toggle:
+            logger.log("widget link toggle")
+            Task { @MainActor in
+                do {
+                    _ = try await service.togglePlayback()
+                } catch {
+                    logger.error("toggle failed error=\(error.localizedDescription, privacy: .public)")
+                }
+            }
+        }
+    }
+}
+#endif
 
 #if canImport(MediaPlayer)
 @MainActor

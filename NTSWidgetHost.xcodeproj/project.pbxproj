@@ -35,6 +35,8 @@
 		A1B2C3D4E5F6000000000B2C /* TogglePlaybackIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */; };
 		A1B2C3D4E5F6000000000B61 /* NTSLiveMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */; };
 		A1B2C3D4E5F6000000000B62 /* NTSLiveMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */; };
+		A1B2C3D4E5F6000000000B63 /* WidgetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009B /* WidgetAction.swift */; };
+		A1B2C3D4E5F6000000000B64 /* WidgetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000009B /* WidgetAction.swift */; };
 		A1B2C3D4E5F6000000000B41 /* StationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A0 /* StationTests.swift */; };
 		A1B2C3D4E5F6000000000B42 /* RadioPlayerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */; };
 		A1B2C3D4E5F6000000000B43 /* IntentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60000000000A2 /* IntentTests.swift */; };
@@ -100,6 +102,7 @@
 		A1B2C3D4E5F6000000000098 /* PlayStationIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayStationIntent.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePlaybackIntent.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSLiveMetadataService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000009B /* WidgetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAction.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A0 /* StationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A1 /* RadioPlayerServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioPlayerServiceTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60000000000A2 /* IntentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentTests.swift; sourceTree = "<group>"; };
@@ -192,6 +195,7 @@
 				A1B2C3D4E5F6000000000098 /* PlayStationIntent.swift */,
 				A1B2C3D4E5F6000000000099 /* TogglePlaybackIntent.swift */,
 				A1B2C3D4E5F600000000009A /* NTSLiveMetadataService.swift */,
+				A1B2C3D4E5F600000000009B /* WidgetAction.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -363,6 +367,7 @@
 				A1B2C3D4E5F6000000000B0D /* PlayStationIntent.swift in Sources */,
 				A1B2C3D4E5F6000000000B0E /* TogglePlaybackIntent.swift in Sources */,
 				A1B2C3D4E5F6000000000B61 /* NTSLiveMetadataService.swift in Sources */,
+				A1B2C3D4E5F6000000000B63 /* WidgetAction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,6 +388,7 @@
 				A1B2C3D4E5F6000000000B2B /* PlayStationIntent.swift in Sources */,
 				A1B2C3D4E5F6000000000B2C /* TogglePlaybackIntent.swift in Sources */,
 				A1B2C3D4E5F6000000000B62 /* NTSLiveMetadataService.swift in Sources */,
+				A1B2C3D4E5F6000000000B64 /* WidgetAction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,10 +460,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				DEVELOPMENT_TEAM = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "NTS Radio";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
-				INFOPLIST_KEY_LSUIElement = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NTSWidgetHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -485,10 +489,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				DEVELOPMENT_TEAM = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "NTS Radio";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
-				INFOPLIST_KEY_LSUIElement = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NTSWidgetHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

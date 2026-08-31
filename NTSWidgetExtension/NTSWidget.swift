@@ -239,7 +239,7 @@ private struct StationButton: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        Button(intent: PlayStationIntent(station: station)) {
+        Link(destination: WidgetAction.play(station).url) {
             HStack(spacing: 5) {
                 if isActive {
                     WaveformIcon(color: .accentColor)
@@ -337,7 +337,7 @@ private struct PlayPauseButton: View {
     let status: WidgetStatus
 
     var body: some View {
-        Button(intent: TogglePlaybackIntent()) {
+        Link(destination: WidgetAction.toggle.url) {
             HStack(spacing: 6) {
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                     .font(.system(size: 14, weight: .semibold, design: .default))

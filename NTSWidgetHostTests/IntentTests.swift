@@ -58,3 +58,46 @@ final class IntentTests: XCTestCase {
         XCTAssertEqual(mock.currentState().currentStation, .nts1)
     }
 }
+
+/// The widget's controls are `ntsradio://` links, not App Intents — see
+/// `WidgetAction` for why. These guard the encoding both sides depend on.
+final class WidgetActionTests: XCTestCase {
+    func testPlayActionRoundTripsPerStation() {
+        for station in Station.allCases {
+            let action = WidgetAction.play(station)
+
+            XCTAssertEqual(WidgetAction(url: action.url), action, station.rawValue)
+        }
+    }
+
+    func testToggleActionRoundTrips() {
+        XCTAssertEqual(WidgetAction(url: WidgetAction.toggle.url), .toggle)
+    }
+
+    /// The scheme is declared in NTSWidgetHost/Info.plist; if these drift, taps
+    /// stop reaching the app and the widget silently does nothing.
+    func testURLsUseTheDeclaredScheme() {
+        XCTAssertEqual(WidgetAction.toggle.url.scheme, "ntsradio")
+        XCTAssertEqual(WidgetAction.play(.nts2).url.scheme, "ntsradio")
+        XCTAssertEqual(AppConstants.urlScheme, "ntsradio")
+    }
+
+    func testPlayURLNamesTheStation() {
+        XCTAssertEqual(WidgetAction.play(.nts2).url.absoluteString, "ntsradio://play?station=nts2")
+        XCTAssertEqual(WidgetAction.toggle.url.absoluteString, "ntsradio://toggle")
+    }
+
+    func testUnrelatedOrMalformedURLsAreRejected() {
+        let rejected = [
+            "https://play?station=nts1",      // wrong scheme
+            "ntsradio://unknown",             // unknown action
+            "ntsradio://play",                // missing station
+            "ntsradio://play?station=nts9"    // unknown station
+        ]
+
+        for raw in rejected {
+            let url = URL(string: raw)!
+            XCTAssertNil(WidgetAction(url: url), raw)
+        }
+    }
+}

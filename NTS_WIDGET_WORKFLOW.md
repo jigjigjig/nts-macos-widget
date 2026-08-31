@@ -1,5 +1,74 @@
 # NTS Widget v1 Workflow
 
+## Widget Controls Moved Off App Intents (2026-08-31)
+
+### Problem observed
+
+- After the signing fix below, the widget rendered correctly but **no control did anything**: no audio, no
+  state change, no status-line update.
+
+### Diagnosis
+
+- The state file was never created, even though `RadioPlayerService.play` writes state as its very first
+  action — so `play()` had never run in the host.
+- A live `log stream` capture during a real tap showed the tap *did* reach the host:
+  `[com.apple.appintents:Connection] Received handleAppleEvent:withReplyEvent:`, immediately followed by
+  an XPC connection to `com.apple.linkd.mediator` failing with `XPC_ERROR_CONNECTION_INTERRUPTED` and
+  `Unable to get synchronousRemoteObjectProxy`. `perform()` was never called, in either process.
+- `linkd` itself was healthy (pid 696, and actively querying our app's `LSDisplayName`). The connection was
+  being refused, not broken.
+- Cause: performing an App Intent requires the app to have a code-signing identity. The identity comes from
+  `com.apple.application-identifier` / `com.apple.developer.team-identifier`, which are restricted
+  entitlements. Signing the host ad-hoc with just those two and no profile made AMFI **SIGKILL** it at
+  launch (exit 137) — verified directly. So the two requirements are mutually exclusive on a free team:
+  an identity that satisfies `linkd` needs a profile, and this team's profiles expire in 7 days.
+
+### Decisions
+
+### 1) Widget controls are URL links, not App Intents
+
+- Decision: `StationButton` and `PlayPauseButton` use `Link(destination:)` with `ntsradio://` URLs
+  (`ntsradio://play?station=nts1`, `ntsradio://toggle`), encoded/parsed by `WidgetAction` in `Shared/`.
+- Why: widget links open through LaunchServices, which needs no code identity, no entitlement and no
+  profile, so the mechanism cannot expire. It is the only interactive-widget path available to this signing
+  setup.
+- Trade-off: no in-place intent execution, so feedback depends on the host writing state and reloading the
+  timeline — which it already did. Verified latency is acceptable: Connecting appears immediately.
+
+### 2) Handle the URL in an NSApplicationDelegate, not `onOpenURL`
+
+- Decision: `WidgetActionURLHandler` is installed via `@NSApplicationDelegateAdaptor`.
+- Why: the host's only scene is `Settings`, which is never instantiated while the app runs headless, so a
+  scene-attached `onOpenURL` would never fire.
+
+### 3) Declare the scheme in an explicit host Info.plist
+
+- Decision: the host target switched from `GENERATE_INFOPLIST_FILE = YES` to
+  `INFOPLIST_FILE = NTSWidgetHost/Info.plist`, carrying over `LSUIElement`, display name and category.
+- Why: `CFBundleURLTypes` cannot be expressed as an `INFOPLIST_KEY_*` build setting.
+
+### 4) Keep the App Intent types, unused
+
+- Decision: `PlayStationIntent` / `TogglePlaybackIntent` and `HostRequiredPlaybackController` stay, with
+  `openAppWhenRun = true`, but nothing invokes them.
+- Why: they are correct and are the better mechanism if this project ever moves to a paid team. Deleting
+  them would discard working code for no gain. Documented as unused so nobody debugs them expecting taps
+  to arrive there.
+
+### Verification
+
+Driven through the real LaunchServices path with `open "ntsradio://…"`, which is exactly what a widget
+`Link` tap does:
+
+- `play?station=nts1` → `WidgetActionURLHandler] widget link play station=nts1` → `play requested` →
+  `AVPlayerEngine load/connecting/playing` → state file reaches `"statusText":"Playing NTS 1"`, and live
+  metadata was fetched ("GOD'S WAITING ROOM W/ DAVID HOLMES").
+- `toggle` → `Paused`. `play?station=nts2` → `item ready to play` / `state=playing` → `Playing NTS 2`.
+  `toggle` → `Paused`.
+- The extension's `getTimeline` was observed loading the host's new state from the shared file, confirming
+  both processes agree on the path.
+
+
 ## Blank Widget / Expired Profile Fix (2026-08-31)
 
 ### Problem observed

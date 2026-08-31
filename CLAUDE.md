@@ -18,13 +18,13 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 # Build host + embedded extension
 xcodebuild -project NTSWidgetHost.xcodeproj -scheme NTSWidgetHost -configuration Debug build
 
-# Run unit tests (see caveat below)
+# Run unit tests
 xcodebuild -project NTSWidgetHost.xcodeproj -scheme NTSWidgetHost \
   -destination 'platform=macOS' test
 
 # Package a distributable Release zip (handles DEVELOPER_DIR itself)
-./scripts/package-release.sh 1.0.1
-./scripts/package-release.sh 1.0.1 --publish   # + gh release create/upload
+./scripts/package-release.sh 1.0.2
+./scripts/package-release.sh 1.0.2 --publish   # + gh release create/upload
 ```
 
 Run a single test with `-only-testing:NTSWidgetHostTests/<Class>/<method>`. The test target builds against the host app via `TEST_HOST`/`BUNDLE_LOADER`, and `@testable import` needs `ENABLE_TESTABILITY`, which the project-level Debug config sets.
@@ -59,7 +59,11 @@ Three targets share one source tree: `Shared/` compiles into both the host app a
 
 **All audio playback lives in the host app process. The widget extension must never own AVPlayer, network, or state writes.**
 
-- Both intents (`PlayStationIntent`, `TogglePlaybackIntent`) set `openAppWhenRun = true` so tapping a widget button launches the hidden host if needed and executes there.
+- **Widget controls are `Link(destination:)` to `ntsradio://` URLs, not App Intents.** A tap goes through LaunchServices, launches the hidden host if needed, and is handled by `WidgetActionURLHandler` (an `NSApplicationDelegate` on the host), which calls `RadioPlayerService`. `WidgetAction` in `Shared/` encodes and parses those URLs, and the scheme is declared in `NTSWidgetHost/Info.plist` — the two must stay in sync or taps silently do nothing.
+
+  This is not a style choice. App Intents cannot work in this build: performing one needs an XPC connection to `com.apple.linkd.mediator`, and `linkd` refuses it for an app with no code-signing identity — the tap dies with `Unable to get synchronousRemoteObjectProxy` and `perform()` is never called. Acquiring an identity means shipping restricted entitlements, which AMFI SIGKILLs (exit 137) without a valid profile, and this team's profiles last 7 days. Both verified on macOS 26.6.2. `PlayStationIntent` / `TogglePlaybackIntent` still exist and are still host-routed, but **nothing invokes them**; they would only become usable on a paid team.
+
+  A consequence worth knowing: an `NSApplicationDelegate` is required rather than SwiftUI's `onOpenURL`, because the app's only scene is `Settings`, which is never instantiated while it runs headless.
 - The host is headless: `LSUIElement = YES` plus `NSApplication.setActivationPolicy(.accessory)`, so no Dock icon or window. `ContentView` exists but is not presented (scene is `Settings { EmptyView() }`).
 - `PlaybackControllerLocator.controller` defaults to `HostRequiredPlaybackController`, which deliberately does nothing but re-read shared state and log an error. `NTSWidgetHostApp.init` swaps in `RadioPlayerService.shared`. If an intent ever executes in the extension, it fails inertly instead of trying to stream audio in a transient WidgetKit process.
 - The extension entitlements intentionally omit `com.apple.security.network.client`.
@@ -114,6 +118,7 @@ The widget's visual layer derives a `WidgetStatus` (`idle`, `playing`, `paused`,
 
 - App bundle id `com.fede.NTSWidgetHost`; extension `com.fede.NTSWidgetHost.NTSWidgetExtension`
 - Widget kind `NTSWidget` (`AppConstants.widgetKind`); the extension scheme sets `_XCWidgetKind=NTSWidget`
+- URL scheme `ntsradio` (`AppConstants.urlScheme`), declared in `NTSWidgetHost/Info.plist` under `CFBundleURLTypes`; the host target uses that explicit plist (not `GENERATE_INFOPLIST_FILE`) because `CFBundleURLTypes` cannot be expressed as an `INFOPLIST_KEY_*` setting
 - The extension bundle id also names the sandbox container the shared state file lives in, so `AppConstants.widgetExtensionBundleIdentifier` must match the extension target's `PRODUCT_BUNDLE_IDENTIFIER`
 - No team id is set anywhere; builds are ad-hoc signed on purpose (see signing invariants)
 - Distribution app is renamed **NTS Radio** at package time; bundle id is unchanged
