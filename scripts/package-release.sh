@@ -83,20 +83,81 @@ mkdir -p "$STAGE"
 # Friendlier Finder name; bundle id stays com.fede.NTSWidgetHost
 ditto "$APP_SRC" "$APP_DST"
 
+APEX="$APP_DST/Contents/PlugIns/NTSWidgetExtension.appex"
+
+# Ship with NO entitlements and NO embedded provisioning profile.
+#
+# This project is signed by a free Apple team, whose provisioning profiles are
+# valid for 7 days. A restricted entitlement (App Sandbox, application-groups,
+# keychain-access-groups, application-identifier) is only authorized by a
+# profile, so re-signing ad-hoc while *preserving* those entitlements — which
+# this script used to do — produces a build that AMFI refuses to spawn once the
+# profile expires. Downloaders of 1.0.1 got a widget that went black after a
+# week. Empty entitlements keep an ad-hoc build launchable indefinitely.
+#
+# The two targets are signed asymmetrically:
+#   - host  : no entitlements at all (unsandboxed, so it can write the shared
+#             state file into the extension's container)
+#   - appex : com.apple.security.app-sandbox ONLY. This one is mandatory —
+#             macOS refuses to register an unsandboxed app extension, and an
+#             unregistered widget renders as an empty black rectangle. Plain
+#             app-sandbox needs no profile, so it is expiry-safe.
 HOST_ENTS="$(mktemp -t nts-host-ents).plist"
 APEX_ENTS="$(mktemp -t nts-appex-ents).plist"
 cleanup() { rm -f "$HOST_ENTS" "$APEX_ENTS"; }
 trap cleanup EXIT
+cat > "$HOST_ENTS" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict/></plist>
+PLIST
+cat > "$APEX_ENTS" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+	<key>com.apple.security.app-sandbox</key><true/>
+</dict></plist>
+PLIST
 
-codesign -d --entitlements :- "$APP_DST" 2>/dev/null | plutil -convert xml1 -o "$HOST_ENTS" -
-APEX="$APP_DST/Contents/PlugIns/NTSWidgetExtension.appex"
-codesign -d --entitlements :- "$APEX" 2>/dev/null | plutil -convert xml1 -o "$APEX_ENTS" -
-/usr/libexec/PlistBuddy -c "Delete :com.apple.security.get-task-allow" "$HOST_ENTS" 2>/dev/null || true
-/usr/libexec/PlistBuddy -c "Delete :com.apple.security.get-task-allow" "$APEX_ENTS" 2>/dev/null || true
+find "$APP_DST" -name embedded.provisionprofile -delete
 
+# Inner-to-outer: re-signing the appex invalidates the host signature.
 codesign --force --sign - --entitlements "$APEX_ENTS" --timestamp=none "$APEX"
 codesign --force --sign - --entitlements "$HOST_ENTS" --timestamp=none "$APP_DST"
 codesign --verify --deep "$APP_DST"
+
+# Fail the build rather than ship another self-expiring release.
+if find "$APP_DST" -name embedded.provisionprofile | grep -q .; then
+  echo "error: embedded provisioning profile survived packaging" >&2
+  exit 1
+fi
+# Profile-dependent entitlements are what expire; app-sandbox is not one.
+for target in "$APP_DST" "$APEX"; do
+  if codesign -d --entitlements :- "$target" 2>/dev/null \
+      | grep -qE 'application-identifier|keychain-access-groups|application-groups'; then
+    echo "error: profile-dependent entitlement present in $target — build will stop launching when a profile expires" >&2
+    exit 1
+  fi
+done
+
+# Conversely, the extension MUST stay sandboxed or macOS will not register it
+# and the widget renders blank.
+if ! codesign -d --entitlements :- "$APEX" 2>/dev/null | grep -q 'app-sandbox'; then
+  echo "error: widget extension is not sandboxed — macOS will refuse to register it" >&2
+  exit 1
+fi
+
+# The staged app must actually start; a spawn failure here is the exact
+# symptom users saw as a blank black widget.
+"$APP_DST/Contents/MacOS/NTSWidgetHost" & SMOKE_PID=$!
+sleep 3
+if ! kill -0 "$SMOKE_PID" 2>/dev/null; then
+  echo "error: staged app failed to launch — refusing to package" >&2
+  exit 1
+fi
+echo "    launch smoke test passed"
+kill "$SMOKE_PID" 2>/dev/null || true
+wait "$SMOKE_PID" 2>/dev/null || true
 
 cat > "$STAGE/How to install.txt" <<'EOF'
 NTS macOS Widget — install

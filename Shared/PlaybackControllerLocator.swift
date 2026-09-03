@@ -11,7 +11,7 @@ final class HostRequiredPlaybackController: PlaybackControlling {
     private var state: SharedPlayerState
 
     init(
-        stateStore: SharedPlayerStateStoring = AppGroupSharedPlayerStateStore()
+        stateStore: SharedPlayerStateStoring = SharedPlayerStateFileStore()
     ) {
         self.stateStore = stateStore
         state = stateStore.load()

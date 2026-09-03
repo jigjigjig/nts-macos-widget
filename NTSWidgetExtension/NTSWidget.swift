@@ -1,6 +1,9 @@
 import SwiftUI
 import WidgetKit
 import os
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct NTSWidgetEntry: TimelineEntry {
     let date: Date
@@ -8,7 +11,7 @@ struct NTSWidgetEntry: TimelineEntry {
 }
 
 struct NTSWidgetProvider: TimelineProvider {
-    private let stateStore = AppGroupSharedPlayerStateStore()
+    private let stateStore = SharedPlayerStateFileStore()
     private let logger = Logger(subsystem: "com.fede.NTSWidgetHost", category: "NTSWidgetProvider")
 
     func placeholder(in context: Context) -> NTSWidgetEntry {
@@ -183,16 +186,24 @@ private struct Badge: View {
 private struct StatusLine: View {
     let status: WidgetStatus
 
+    private static let fontSize: CGFloat = 22
+    private static let capCenterOffset = VerticalAlignment.capCenterOffset(
+        forFontSize: fontSize,
+        weight: .semibold
+    )
+
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 10) {
+        HStack(alignment: .firstLineCenter, spacing: 10) {
             symbol
+                .alignmentGuide(.firstLineCenter) { $0[VerticalAlignment.center] }
 
             Text(status.lineText)
-                .font(.system(size: 22, weight: .semibold, design: .default))
+                .font(.system(size: Self.fontSize, weight: .semibold, design: .default))
                 .tracking(-0.5)
                 .foregroundStyle(status.visualState == .paused || status.visualState == .idle ? .secondary : .primary)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
+                .alignmentGuide(.firstLineCenter) { $0[.firstTextBaseline] - Self.capCenterOffset }
 
             Spacer(minLength: 0)
         }
@@ -239,7 +250,7 @@ private struct StationButton: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        Button(intent: PlayStationIntent(station: station)) {
+        Link(destination: WidgetAction.play(station).url) {
             HStack(spacing: 5) {
                 if isActive {
                     WaveformIcon(color: .accentColor)
@@ -337,7 +348,7 @@ private struct PlayPauseButton: View {
     let status: WidgetStatus
 
     var body: some View {
-        Button(intent: TogglePlaybackIntent()) {
+        Link(destination: WidgetAction.toggle.url) {
             HStack(spacing: 6) {
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                     .font(.system(size: 14, weight: .semibold, design: .default))

@@ -1,6 +1,6 @@
 # NTS Widget Project Handoff (for LLM continuation)
-Date: 2026-04-20
-Repo root: /Users/federico.cattaneo/Documents/cursor/nts/macos-nts-widget
+Date: 2026-08-31
+Repo root: see the working checkout; see CLAUDE.md for build/verify commands
 
 ## 1) Project objective
 Build a native macOS widget for live NTS radio with:
@@ -11,9 +11,16 @@ Build a native macOS widget for live NTS radio with:
 
 ## 2) Current state summary
 - Visual design is customized to match the external handoff aesthetic.
-- Widget interaction uses App Intents routed to the host app (`openAppWhenRun = true`) for durable playback.
+- Widget interaction uses `ntsradio://` URL links opened through LaunchServices and handled by the host
+  (`WidgetActionURLHandler`). App Intents are NOT used: `linkd` refuses the required XPC connection for an
+  app with no code-signing identity, and acquiring one needs restricted entitlements that AMFI SIGKILLs
+  without a profile (this free team's profiles last 7 days). The intent types remain but are unused.
 - Host app is headless (`LSUIElement = YES`, `.accessory`) and does not present a normal window.
-- Shared state is persisted in the shared keychain access group.
+- Shared state is persisted as an atomic JSON file inside the widget extension's sandbox container.
+- Signing carries NO profile-dependent entitlements and no embedded provisioning profile: the free team's
+  profiles expire in 7 days and an expired profile makes AMFI refuse to spawn the app, which renders the
+  widget as a blank black rectangle (this broke 1.0.1). The extension keeps `app-sandbox` because macOS
+  will not register an unsandboxed extension; the host is unsandboxed so it can write the state file.
 - Widget gallery snapshots are intentionally static; timeline reloads read shared state only. Provider code must not fetch network data, write state, create AVPlayer, or run host sync work.
 
 ## 3) Architecture
@@ -26,8 +33,9 @@ Build a native macOS widget for live NTS radio with:
 - `Station`: station enum + stream URL mapping.
 - `SharedPlayerState`: shared state model (`currentStation`, `isPlaying`, `statusText`, `lastError`, `updatedAt`).
 - `PlaybackControlling`: protocol for playback actions.
-- `AppGroupSharedPlayerStateStore`: app-group backed persistence.
-- `PlayStationIntent` + `TogglePlaybackIntent`: widget button actions.
+- `SharedPlayerStateFileStore`: file-backed persistence in the extension container.
+- `WidgetAction`: encodes/parses the `ntsradio://` control URLs (the live mechanism).
+- `PlayStationIntent` + `TogglePlaybackIntent`: legacy App Intents, retained but unused.
 - `WidgetReloader`: timeline refresh helper.
 - `PlaybackControllerLocator`: runtime-selected playback controller.
 
@@ -54,17 +62,17 @@ Build a native macOS widget for live NTS radio with:
 
 ## 4) Runtime flow (current)
 ### 4.1 Station button (1/2)
-1. Widget button triggers `PlayStationIntent`.
-2. `openAppWhenRun = true` launches the hidden host if needed.
+1. Widget `Link` opens `ntsradio://play?station=<id>`.
+2. LaunchServices launches the hidden host if needed.
 3. Host app installs `RadioPlayerService.shared` into `PlaybackControllerLocator`.
-4. Intent executes `RadioPlayerService.play(station:)`.
+4. `WidgetActionURLHandler` executes `RadioPlayerService.play(station:)`.
 5. Host-owned `AVPlayerEngine` loads the stream URL and starts playback.
-6. Shared state is written to the shared keychain item and the widget timeline is reloaded.
+6. Shared state is written to the JSON file in the extension container and the timeline is reloaded.
 
 ### 4.2 Play/Pause button
-1. Widget button triggers `TogglePlaybackIntent`.
-2. `openAppWhenRun = true` launches the hidden host if needed.
-3. Intent executes `RadioPlayerService.togglePlayback()`.
+1. Widget `Link` opens `ntsradio://toggle`.
+2. LaunchServices launches the hidden host if needed.
+3. `WidgetActionURLHandler` executes `RadioPlayerService.togglePlayback()`.
 4. Host-owned playback pauses or resumes based on current state.
 5. Shared state is persisted and widget timelines are reloaded.
 
@@ -73,7 +81,7 @@ Build a native macOS widget for live NTS radio with:
 - `PlaybackControllerLocator.controller = RadioPlayerService.shared`
 - app activation policy set to `.accessory`
 - The host does not run external state sync on launch.
-- Because intents use `openAppWhenRun = true`, widget taps can start a durable hidden playback process without exposing a Dock/Cmd-Tab app.
+- Because the controls are URL links, widget taps start a durable hidden playback process without exposing a Dock/Cmd-Tab app.
 
 ## 5) Major implementation timeline
 ### 2026-04-18
@@ -101,8 +109,8 @@ Build a native macOS widget for live NTS radio with:
 
 ## 6) Key files to inspect first
 - `NTSWidgetExtension/NTSWidget.swift`
-- `Shared/PlayStationIntent.swift`
-- `Shared/TogglePlaybackIntent.swift`
+- `Shared/WidgetAction.swift`
+- `NTSWidgetHost/Info.plist` (declares the `ntsradio` scheme)
 - `Shared/PlaybackControllerLocator.swift`
 - `Shared/SharedPlayerStateStore.swift`
 - `NTSWidgetHost/NTSWidgetHostApp.swift`
@@ -112,20 +120,25 @@ Build a native macOS widget for live NTS radio with:
 - `MANUAL_TEST_PLAN.md`
 
 ## 7) Entitlements and identifiers
-- App group: `group.com.fede.NTSWidgetHost`
 - App bundle id: `com.fede.NTSWidgetHost`
 - Extension bundle id: `com.fede.NTSWidgetHost.NTSWidgetExtension`
-- Both app and extension entitlements include:
-- `com.apple.security.app-sandbox = true`
-- `com.apple.security.application-groups = group.com.fede.NTSWidgetHost`
-- Only the host app has `com.apple.security.network.client = true`.
+- Host entitlements: **empty** (unsandboxed, ad-hoc signed).
+- Extension entitlements: `com.apple.security.app-sandbox = true` and nothing else.
+- No `application-identifier`, `team-identifier`, `keychain-access-groups`, `application-groups`, or
+  embedded provisioning profile anywhere. `scripts/package-release.sh` enforces this.
 
 ## 8) Known operational pitfalls
 - Desktop widget can run stale code from `/Applications/NTSWidgetHost.app` instead of latest DerivedData output.
 - Rebuilding in Xcode is not always enough to update installed widget behavior.
 - Notification Center / widget extension process caching can hide new behavior until processes are restarted.
 - Do not add network requests, shared-state writes, AVPlayer ownership, or infinite animations to `NTSWidgetProvider` or widget rendering paths. Those can stall the widget gallery/sidebar.
-- Extension-side group `UserDefaults` access can produce CFPrefs sandbox warnings; current store design avoids that hot path.
+- Replacing `/Applications/NTS Radio.app` deregisters the widget extension. Re-run
+  `lsregister -f -R "/Applications/NTS Radio.app"` and confirm with `pluginkit -m -i ...`, or the widget
+  stays blank.
+- `log show` did not persist this app's `Logger` output on macOS 26.6.2, returning zero lines for a running
+  process. Absence of log output proves nothing; use `log stream --level debug` while reproducing.
+- Do not "restore" App Intents for the widget controls. It cannot work under this signing setup — see the
+  2026-08-31 entry in `NTS_WIDGET_WORKFLOW.md`.
 
 ## 9) Build/deploy/debug commands used
 - Build extension + host:

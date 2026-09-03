@@ -14,14 +14,22 @@ final class RadioPlayerServiceTests: XCTestCase {
             initialState: .idle()
         )
 
-        let state = try await sut.play(station: .nts1)
+        // `play` reports Connecting synchronously so the widget gets immediate
+        // feedback; Playing only arrives once the engine confirms it.
+        let connecting = try await sut.play(station: .nts1)
 
-        XCTAssertEqual(state.currentStation, .nts1)
-        XCTAssertTrue(state.isPlaying)
-        XCTAssertEqual(state.statusText, "Playing NTS 1")
+        XCTAssertEqual(connecting.currentStation, .nts1)
+        XCTAssertEqual(connecting.statusText, "Connecting NTS 1")
         XCTAssertEqual(engine.loadedURLs.last, Station.nts1.streamURL)
         XCTAssertEqual(engine.playCallCount, 1)
         XCTAssertEqual(reloader.reloadCallCount, 1)
+
+        await simulateAndDrain(engine, .playing)
+
+        XCTAssertEqual(sut.currentState().currentStation, .nts1)
+        XCTAssertTrue(sut.currentState().isPlaying)
+        XCTAssertEqual(sut.currentState().statusText, "Playing NTS 1")
+        XCTAssertEqual(reloader.reloadCallCount, 2)
     }
 
     @MainActor
@@ -37,8 +45,11 @@ final class RadioPlayerServiceTests: XCTestCase {
         )
 
         _ = try await sut.play(station: .nts1)
-        let state = try await sut.play(station: .nts2)
+        await simulateAndDrain(engine, .playing)
+        _ = try await sut.play(station: .nts2)
+        await simulateAndDrain(engine, .playing)
 
+        let state = sut.currentState()
         XCTAssertEqual(state.currentStation, .nts2)
         XCTAssertTrue(state.isPlaying)
         XCTAssertEqual(state.statusText, "Playing NTS 2")
@@ -79,9 +90,12 @@ final class RadioPlayerServiceTests: XCTestCase {
         )
 
         _ = try await sut.play(station: .nts1)
+        await simulateAndDrain(engine, .playing)
         _ = try await sut.togglePlayback()
-        let resumed = try await sut.togglePlayback()
+        _ = try await sut.togglePlayback()
+        await simulateAndDrain(engine, .playing)
 
+        let resumed = sut.currentState()
         XCTAssertTrue(resumed.isPlaying)
         XCTAssertEqual(resumed.currentStation, .nts1)
         XCTAssertEqual(resumed.statusText, "Playing NTS 1")
@@ -131,10 +145,27 @@ final class RadioPlayerServiceTests: XCTestCase {
 
         let failed = try await sut.play(station: .nts1)
 
-        XCTAssertNil(failed.currentStation)
         XCTAssertFalse(failed.isPlaying)
         XCTAssertEqual(failed.statusText, "Unavailable")
         XCTAssertEqual(failed.lastError, "Stream unavailable")
-        XCTAssertEqual(reloader.reloadCallCount, 1)
+        // The station stays selected so the widget can say which stream failed
+        // rather than falling back to a blank idle state.
+        XCTAssertEqual(failed.currentStation, .nts1)
+        // Connecting, then Unavailable — both are meaningful transitions.
+        XCTAssertEqual(reloader.reloadCallCount, 2)
+    }
+
+    /// `RadioPlayerService` forwards engine callbacks through
+    /// `Task { @MainActor in … }`, so a simulated engine state only lands after
+    /// the current actor turn yields. Drive it and then drain the actor.
+    @MainActor
+    private func simulateAndDrain(
+        _ engine: MockRadioPlaybackEngine,
+        _ state: RadioEngineState
+    ) async {
+        engine.simulateEngineState(state)
+        for _ in 0..<10 {
+            await Task.yield()
+        }
     }
 }
